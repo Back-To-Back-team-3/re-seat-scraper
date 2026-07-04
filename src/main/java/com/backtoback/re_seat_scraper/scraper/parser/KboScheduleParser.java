@@ -1,5 +1,7 @@
-package com.backtoback.re_seat_scraper.scraper;
+package com.backtoback.re_seat_scraper.scraper.parser;
 
+import com.backtoback.re_seat_scraper.scraper.dto.RawGame;
+import com.backtoback.re_seat_scraper.scraper.enums.KboTeam;
 import com.microsoft.playwright.Locator;
 import org.springframework.stereotype.Component;
 

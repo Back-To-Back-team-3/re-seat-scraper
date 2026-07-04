@@ -1,5 +1,6 @@
-package com.backtoback.re_seat_scraper.scraper;
+package com.backtoback.re_seat_scraper.scraper.parser;
 
+import com.backtoback.re_seat_scraper.scraper.dto.RawGame;
 import com.microsoft.playwright.*;
 import org.junit.jupiter.api.Test;
 import java.io.File;

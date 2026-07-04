@@ -1,4 +1,4 @@
-package com.backtoback.re_seat_scraper.scraper;
+package com.backtoback.re_seat_scraper.scraper.enums;
 import java.util.Optional;
 
 public enum KboStadium {

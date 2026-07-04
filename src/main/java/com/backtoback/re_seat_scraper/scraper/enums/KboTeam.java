@@ -1,4 +1,4 @@
-package com.backtoback.re_seat_scraper.scraper;
+package com.backtoback.re_seat_scraper.scraper.enums;
 
 public enum KboTeam {
     DOOSAN("두산", "두산 베어스"),
