@@ -1,7 +1,7 @@
 package com.backtoback.re_seat_scraper.runner;
 
 import com.backtoback.re_seat_scraper.config.ScraperProperties;
-import com.backtoback.re_seat_scraper.export.CsvExporter;
+import com.backtoback.re_seat_scraper.export.ReSeatCsvExporter;
 import com.backtoback.re_seat_scraper.repository.StadiumRepository;
 import com.backtoback.re_seat_scraper.repository.TeamRepository;
 import com.backtoback.re_seat_scraper.seed.ReferenceDataSeeder;
@@ -80,8 +80,8 @@ class RunnerConditionTest {
         }
 
         @Bean
-        CsvExporter csvExporter() {
-            return mock(CsvExporter.class);
+        ReSeatCsvExporter csvExporter() {
+            return mock(ReSeatCsvExporter.class);
         }
     }
 }

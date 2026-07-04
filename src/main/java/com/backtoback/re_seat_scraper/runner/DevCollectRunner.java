@@ -1,7 +1,7 @@
 package com.backtoback.re_seat_scraper.runner;
 
 import com.backtoback.re_seat_scraper.config.ScraperProperties;
-import com.backtoback.re_seat_scraper.export.CsvExporter;
+import com.backtoback.re_seat_scraper.export.ReSeatCsvExporter;
 import com.backtoback.re_seat_scraper.service.ScheduleCollectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class DevCollectRunner implements ApplicationRunner {
 
     private final ScraperProperties scraperProperties;
     private final ScheduleCollectService collectService;
-    private final CsvExporter csvExporter;
+    private final ReSeatCsvExporter csvExporter;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
