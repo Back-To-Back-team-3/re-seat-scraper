@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.time.YearMonth;
+
 @Slf4j
 @Order(2)
 @Component
@@ -27,6 +29,6 @@ public class DevCollectRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         String result = collectService.collect(TARGET_SEASON, TARGET_MONTH);
         log.info("[RUNNER] {}-{} {}", TARGET_SEASON, TARGET_MONTH, result);
-        csvExporter.exportAll();
+        csvExporter.exportAll(YearMonth.of(TARGET_SEASON, TARGET_MONTH));
     }
 }
