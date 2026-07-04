@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ public class ScheduleCollectService {
 
     @Transactional
     public String collect(int season, int month) {
+        YearMonth target = YearMonth.of(season, month);
         List<RawGame> raws;
         try (Playwright pw = Playwright.create()) {
             Browser browser = pw.chromium().launch();
@@ -43,7 +45,9 @@ public class ScheduleCollectService {
             page.selectOption(seriesSel, "0,9,6");                      page.waitForTimeout(600);
 
             List<Locator> rows = page.locator(tableSel + " tr").all();
-            raws = parser.parse(rows, season);
+            raws = parser.parse(rows, season).stream()
+                    .filter(raw -> YearMonth.from(raw.date()).equals(target))
+                    .toList();
             browser.close();
         }
         log.info("[COLLECT] season={} month={} rawCount={}", season, month, raws.size());
