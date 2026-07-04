@@ -1,3 +1,25 @@
 spring:
   application:
     name: re-seat-scraper
+  datasource:
+    url: jdbc:mysql://localhost:3306/reseat_scraper?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: root          # 본인 MySQL 비번으로 변경
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+kbo:
+  url: https://www.koreabaseball.com/Schedule/Schedule.aspx
+  selectors:
+    year: "#ddlYear"
+    month: "#ddlMonth"
+    series: "#ddlSeries"
+    games-table: "#tblScheduleList > tbody"
+
+scraper:
+  output-dir: ./output      # CSV 출력 폴더
