@@ -193,6 +193,19 @@ macOS/Linux:
 ./gradlew test
 ```
 
+### 테스트 fixture 갱신 방법
+
+[scheduled-games.html](src/test/resources/scheduled-games.html)은 `KboScheduleParser` 테스트용 HTML fixture입니다. 실제 수집에는 사용하지 않고, KBO 일정 테이블 구조를 고정해 두고 파서가 계속 동작하는지 확인하는 용도입니다.
+
+KBO 홈페이지의 일정 테이블 구조가 바뀌어 파서 테스트가 실패하면 다음 순서로 갱신합니다.
+
+1. 브라우저에서 KBO 일정 페이지를 엽니다.
+2. 개발자 도구에서 `#tblScheduleList` 테이블 HTML을 복사합니다.
+3. [scheduled-games.html](src/test/resources/scheduled-games.html)의 테이블 부분에 붙여넣습니다.
+4. `.\gradlew.bat test` 또는 `./gradlew test`로 파서 테스트를 다시 실행합니다.
+
+fixture는 원본 HTML 구조를 검증하기 위한 자료이므로 불필요하게 가공하지 않습니다.
+
 ## 주의사항
 
 - 수집 데이터의 권리는 KBO에 있습니다.
