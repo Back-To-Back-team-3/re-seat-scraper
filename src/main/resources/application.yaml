@@ -22,4 +22,8 @@ kbo:
     games-table: "#tblScheduleList > tbody"
 
 scraper:
+  seed:
+    enabled: true
+  collect:
+    enabled: true
   output-dir: ./output      # CSV 출력 폴더

@@ -5,11 +5,13 @@ import com.backtoback.re_seat_scraper.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Order(1)   // 수집보다 먼저 실행
 @Component
+@ConditionalOnProperty(prefix = "scraper.seed", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ReferenceDataSeeder implements ApplicationRunner {
 
