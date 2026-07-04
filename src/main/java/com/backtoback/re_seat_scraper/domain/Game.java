@@ -46,6 +46,7 @@ public class Game {
         this.title = title;
     }
 
+    // 같은 경기 행은 유지하고, 일정 변경으로 달라질 수 있는 필드만 갱신한다.
     public boolean updateFrom(Game n) {
         boolean changed = !Objects.equals(gameAt, n.gameAt)
                 || !Objects.equals(title, n.title);

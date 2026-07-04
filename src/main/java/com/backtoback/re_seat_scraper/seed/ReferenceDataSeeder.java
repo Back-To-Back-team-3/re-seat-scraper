@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-@Order(1)   // 수집보다 먼저 실행
+@Order(1)
 @Component
 @ConditionalOnProperty(prefix = "scraper.seed", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
@@ -20,6 +20,7 @@ public class ReferenceDataSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        // 기준데이터는 모든 수집 실행에서 공유하므로 최초 한 번만 넣는다.
         if (teamRepo.count() > 0) return;
 
         Stadium jamsil   = stadium("서울종합운동장 야구장", "서울 송파구", 23750);

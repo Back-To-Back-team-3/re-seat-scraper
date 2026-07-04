@@ -2,15 +2,23 @@ package com.backtoback.re_seat_scraper.scraper;
 
 import com.microsoft.playwright.Locator;
 import org.springframework.stereotype.Component;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class KboScheduleParser {
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
+    /**
+     * KBO 일정 테이블 행을 RawGame으로 변환한다.
+     * KBO 테이블은 하루의 첫 행에만 날짜가 있으므로 이후 행은 직전 날짜를 이어서 사용한다.
+     */
     public List<RawGame> parse(List<Locator> rows, int season) {
         Map<String, Integer> countMap = new HashMap<>();
         List<RawGame> result = new ArrayList<>();
@@ -18,9 +26,9 @@ public class KboScheduleParser {
 
         for (Locator row : rows) {
             Locator play = row.locator("td.play");
-            if (play.count() == 0) continue;                        // 규칙2: 빈 행 스킵
+            if (play.count() == 0) continue;
 
-            Locator day = row.locator("td.day");                    // 규칙1: 날짜 carry-over
+            Locator day = row.locator("td.day");
             if (day.count() > 0) {
                 String[] md = day.innerText().substring(0, 5).trim().split("\\.");
                 current = LocalDate.of(season, Integer.parseInt(md[0]), Integer.parseInt(md[1]));
@@ -33,7 +41,7 @@ public class KboScheduleParser {
             String home = KboTeam.fromShort(teams.get(1).trim()).fullName();
 
             String base = current.format(FMT) + "-" + teams.get(0).trim() + "-" + teams.get(1).trim();
-            int count = countMap.merge(base, 1, Integer::sum);      // 규칙3: 더블헤더
+            int count = countMap.merge(base, 1, Integer::sum); // 더블헤더는 날짜와 팀이 같으므로 순번을 붙인다.
 
             List<Locator> rest = row.locator("td:not([class])").all();
             String stadium = rest.get(3).innerText().trim();

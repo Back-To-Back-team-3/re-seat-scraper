@@ -1,12 +1,12 @@
 package com.backtoback.re_seat_scraper.export;
 
+import com.backtoback.re_seat_scraper.config.ScraperProperties;
 import com.backtoback.re_seat_scraper.domain.Game;
 import com.backtoback.re_seat_scraper.repository.GameRepository;
 import com.backtoback.re_seat_scraper.repository.StadiumRepository;
 import com.backtoback.re_seat_scraper.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -17,7 +17,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -27,26 +29,28 @@ public class CsvExporter {
     private final StadiumRepository stadiumRepo;
     private final TeamRepository teamRepo;
     private final GameRepository gameRepo;
-
-    @Value("${scraper.output-dir}") private String outputDir;
+    private final ScraperProperties scraperProperties;
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public void exportAll() throws IOException {
-        exportAll(null);
+        exportAll((List<YearMonth>) null);
     }
 
     public void exportAll(YearMonth targetMonth) throws IOException {
-        Path dir = Paths.get(outputDir);
+        exportAll(targetMonth == null ? null : List.of(targetMonth));
+    }
+
+    public void exportAll(List<YearMonth> targetMonths) throws IOException {
+        Path dir = Paths.get(scraperProperties.getOutputDir());
         Files.createDirectories(dir);
 
+        // 구장과 팀은 기준데이터이므로 항상 전체를 출력한다.
         exportStadiums(dir.resolve("stadiums.csv"));
         exportTeams(dir.resolve("teams.csv"));
-        exportGames(dir.resolve("games.csv"), targetMonth);
+        exportGames(dir.resolve("games.csv"), targetMonths);
 
-        log.info("[EXPORT] CSV exported{} to {}",
-                targetMonth != null ? " for " + targetMonth : "",
-                dir.toAbsolutePath());
+        log.info("[EXPORT] CSV exported for months={} to {}", targetMonths, dir.toAbsolutePath());
     }
 
     private void exportStadiums(Path path) throws IOException {
@@ -69,12 +73,8 @@ public class CsvExporter {
         }
     }
 
-    private void exportGames(Path path, YearMonth targetMonth) throws IOException {
-        List<Game> games = targetMonth == null
-                ? gameRepo.findAll()
-                : gameRepo.findByGameAtGreaterThanEqualAndGameAtLessThanOrderByGameAtAsc(
-                        targetMonth.atDay(1).atStartOfDay(),
-                        targetMonth.plusMonths(1).atDay(1).atStartOfDay());
+    private void exportGames(Path path, List<YearMonth> targetMonths) throws IOException {
+        List<Game> games = findGamesForExport(targetMonths);
 
         try (BufferedWriter w = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             w.write("game_key,home_team_id,away_team_id,stadium_id,game_at,title\n");
@@ -88,6 +88,27 @@ public class CsvExporter {
                         q(g.getTitle())));
             }
         }
+    }
+
+    private List<Game> findGamesForExport(List<YearMonth> targetMonths) {
+        if (targetMonths == null) {
+            return gameRepo.findAll();
+        }
+        if (targetMonths.isEmpty()) {
+            return List.of();
+        }
+
+        YearMonth start = targetMonths.get(0);
+        YearMonth end = targetMonths.get(targetMonths.size() - 1);
+        Set<YearMonth> selectedMonths = new HashSet<>(targetMonths);
+
+        // 범위 조회 후 선택 월만 한 번 더 거르면, DB에 남아 있는 비수집 월이 CSV에 섞이지 않는다.
+        return gameRepo.findByGameAtGreaterThanEqualAndGameAtLessThanOrderByGameAtAsc(
+                        start.atDay(1).atStartOfDay(),
+                        end.plusMonths(1).atDay(1).atStartOfDay())
+                .stream()
+                .filter(game -> selectedMonths.contains(YearMonth.from(game.getGameAt())))
+                .toList();
     }
 
     private String q(String s) {
