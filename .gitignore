@@ -43,5 +43,7 @@ hs_err_pid*
 replay_pid*
 
 # 9. 스크래퍼 산출물 — CSV는 output/ 폴더로 나옴
-# CSV는 커밋 대상이 아님 (본체 레포로 옮겨서 커밋)
 output/
+
+# 10. docs 
+docs/
